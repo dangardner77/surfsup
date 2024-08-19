@@ -13,3 +13,8 @@ additional rules could include:
 - surf forecast for sea swell info (wave height and period)
 - midday sessions being downgraded as likely to be a choppy mess
 - favouring conditions where the wind speed and gust speed are within a close range of each other (5 knots)
+
+## Data Sources
+https://open-meteo.com/
+
+https://api.open-meteo.com/v1/forecast?latitude=50.78&longitude=-0.99&current=is_day,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=wind_speed_10m,wind_direction_10m,wind_gusts_10m&daily=sunrise,sunset,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant&wind_speed_unit=kn&timezone=Europe%2FLondon
