@@ -7,7 +7,7 @@ basic rules:
 - within daylight hours
 - within two hours of low tide (sandbar exposed)
 - wind gusting over 14 knots
-- wind direction not from the north (offshore)
+- wind direction not from the north (offshore, in range 90 to 270 degrees, could use a lookup to convert to NESW or just learn to read degrees)
 
 additional rules could include:
 - surf forecast for sea swell info (wave height and period)
