@@ -15,9 +15,19 @@ additional rules could include:
 - favouring conditions where the wind speed and gust speed are within a close range of each other (5 knots)
 
 ## Data Sources
+
+### Weather
 https://open-meteo.com/
 
 https://api.open-meteo.com/v1/forecast?latitude=50.78&longitude=-0.99&current=is_day,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=wind_speed_10m,wind_direction_10m,wind_gusts_10m&daily=sunrise,sunset,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant&wind_speed_unit=kn&timezone=Europe%2FLondon
 
-
+### Tide Times and Heights
 https://easytide.admiralty.co.uk/?PortID=0066
+
+https://environment.data.gov.uk/flood-monitoring/doc/tidegauge
+
+https://environment.data.gov.uk/flood-monitoring/tidegauge/index.html#filter=7&station=E71839
+
+https://admiraltyapi.developer.azure-api.net/api-details#api=uk-tidal-api&operation=Stations_GetStation
+
+
