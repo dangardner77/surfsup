@@ -41,7 +41,7 @@ jobs:
       run: python forecast.py
 
     - name: Upload HTML file
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: weather_forecast.html
         path: ./
