@@ -8,8 +8,8 @@ data = response.json()
 
 # Extract relevant information
 current_weather = data['current']
-hourly_forecast = data['hourly']
-daily_forecast = data['daily']
+hourly_forecast = data['hourly']['time']
+daily_forecast = data['daily']['time']
 
 # Generate HTML content
 html_content = f"""
