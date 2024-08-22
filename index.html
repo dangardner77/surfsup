@@ -35,24 +35,16 @@
     </div>
 
     <script>
-        const weatherData = {
-            // Your JSON data here
-            // Example:
-            current: {
-                time: "2024-08-22T14:30",
-                wind_speed_10m: 21.7,
-                wind_direction_10m: 226,
-                wind_gusts_10m: 35.0,
-                // ... other properties
-            },
-            hourly: {
-                time: ["2024-08-22T00:00", /* ... other times */],
-                wind_speed_10m: [13.6, /* ... other speeds */],
-                wind_direction_10m: [226, /* ... other directions */],
-                wind_gusts_10m: [35.0, /* ... other gusts */],
-                // ... other properties
-            },
-        };
+        async function fetchData() {
+            try {
+                const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.78&longitude=-0.99&current=is_day,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=wind_speed_10m,wind_direction_10m,wind_gusts_10m&daily=sunrise,sunset,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant&wind_speed_unit=kn&timezone=Europe%2FLondon');
+                const weatherData = await response.json();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        
+        fetchData();
 
         // Display current weather data
         const currentDataElement = document.getElementById("current-data");
