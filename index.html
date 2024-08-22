@@ -1,6 +1,66 @@
-<h1>Surfs Up!</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        pre {
+            white-space: pre-wrap;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather Data</h1>
+        <h2>Current Weather</h2>
+        <pre id="current-data"></pre>
+        <h2>Hourly Forecast</h2>
+        <pre id="hourly-data"></pre>
+    </div>
 
-<script>
+    <script>
+        const weatherData = {
+            // Your JSON data here
+            // Example:
+            current: {
+                time: "2024-08-22T14:30",
+                wind_speed_10m: 21.7,
+                wind_direction_10m: 226,
+                wind_gusts_10m: 35.0,
+                // ... other properties
+            },
+            hourly: {
+                time: ["2024-08-22T00:00", /* ... other times */],
+                wind_speed_10m: [13.6, /* ... other speeds */],
+                wind_direction_10m: [226, /* ... other directions */],
+                wind_gusts_10m: [35.0, /* ... other gusts */],
+                // ... other properties
+            },
+        };
 
-  
-</script>
+        // Display current weather data
+        const currentDataElement = document.getElementById("current-data");
+        currentDataElement.textContent = JSON.stringify(weatherData.current, null, 2);
+
+        // Display hourly forecast data
+        const hourlyDataElement = document.getElementById("hourly-data");
+        hourlyDataElement.textContent = JSON.stringify(weatherData.hourly, null, 2);
+    </script>
+</body>
+</html>
