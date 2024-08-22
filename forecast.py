@@ -57,7 +57,7 @@ html_content = f"""
             <th>Wind Direction (°)</th>
             <th>Wind Gusts (kn)</th>
         </tr>
-        {"".join([f"<tr><td>{hour['time']}</td><td>{hour['wind_speed_10m']}</td><td>{hour['wind_direction_10m']}</td><td>{hour['wind_gusts_10m']}</td></tr>" for hour in hourly_forecast])}
+
     </table>
 
 
