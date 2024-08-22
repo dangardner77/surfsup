@@ -8,8 +8,8 @@ data = response.json()
 
 # Extract relevant information
 current_weather = data['current']
-hourly_forecast = data['hourly']['time']
-daily_forecast = data['daily']['time']
+hourly_forecast = data['hourly']
+daily_forecast = data['daily']
 
 # Generate HTML content
 html_content = f"""
@@ -60,18 +60,7 @@ html_content = f"""
         {"".join([f"<tr><td>{hour['time']}</td><td>{hour['wind_speed_10m']}</td><td>{hour['wind_direction_10m']}</td><td>{hour['wind_gusts_10m']}</td></tr>" for hour in hourly_forecast])}
     </table>
 
-    <h2>Daily Forecast</h2>
-    <table>
-        <tr>
-            <th>Date</th>
-            <th>Sunrise</th>
-            <th>Sunset</th>
-            <th>Max Wind Speed (kn)</th>
-            <th>Max Wind Gusts (kn)</th>
-            <th>Dominant Wind Direction (°)</th>
-        </tr>
-        {"".join([f"<tr><td>{day['date']}</td><td>{day['sunrise']}</td><td>{day['sunset']}</td><td>{day['wind_speed_10m_max']}</td><td>{day['wind_gusts_10m_max']}</td><td>{day['wind_direction_10m_dominant']}</td></tr>" for day in daily_forecast])}
-    </table>
+
 </body>
 </html>
 """
