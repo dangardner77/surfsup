@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				const cell4 = row.insertCell(3);
 				const cell5 = row.insertCell(4);
 
-				cell1.textContent = entry.datetime + ' ' + getDaylightEmoji(entry.daylight);
+				cell1.textContent = formatDateString(entry.datetime) + ' ' + getDaylightEmoji(entry.daylight);
 				cell2.textContent = getLowTide(entry.lowtide);
 				cell3.textContent = convertDegreesToCompass(entry.wind_direction) + ' (' + entry.wind_direction + '°)';
 				cell4.textContent = convertKnotsToBeaufort(entry.wind_speed);
@@ -72,10 +72,17 @@ function calculateAverageWind(speed,gusts) {
     return averageWind;
 }
 
-function formatDate(date) {
-	
-	return formattedDate;
+function formatDateString(dateString) {
+    const date = new Date(dateString);
+    const options = {
+		weekday: 'short',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    return date.toLocaleString('en-GB', options);
 }
+
+
 
 function getDaylightEmoji(daynight) {
 	if (daynight == 'day') {
