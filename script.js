@@ -13,13 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
 				const cell2 = row.insertCell(1);
 				const cell3 = row.insertCell(2);
 				const cell4 = row.insertCell(3);
-				const cell5 = row.insertCell(4);
 
-				cell1.textContent = formatDateString(entry.datetime) + ' ' + getDaylightEmoji(entry.daylight);
-				cell2.textContent = getLowTide(entry.lowtide);
-				cell3.textContent = convertDegreesToCompass(entry.wind_direction) + ' (' + entry.wind_direction + '°)';
-				cell4.textContent = convertKnotsToBeaufort(entry.wind_speed);
-				cell5.textContent = entry.wind_speed + ' gusting ' + entry.wind_gusts;
+				cell1.textContent = formatDateString(entry.datetime) + ' ' + getDaylightEmoji(entry.daylight) + ' ' + getTideEmoji(entry.lowtide);
+				cell2.textContent = convertDegreesToCompass(entry.wind_direction) + ' (' + entry.wind_direction + '°)';
+				cell3.textContent = convertKnotsToBeaufort(entry.wind_speed);
+				cell4.textContent = entry.wind_speed + ' gusting ' + entry.wind_gusts;
 			});
 			
         })
@@ -94,8 +92,8 @@ function getDaylightEmoji(daynight) {
 	return daynightEmoji;
 }
 
-function getLowTide(lowtide) {
-	if (lowtide == 'low') {
+function getTideEmoji(tide) {
+	if (tide == 'low') {
 		emoji = '🌅';
 	} else {
 		emoji = '';
