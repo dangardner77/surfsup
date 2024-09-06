@@ -30,7 +30,7 @@ def get_low_tides(date):
     low_tide_list = []
     if date in df.index:
         for tide in df.loc[date, ['tide_1', 'tide_2', 'tide_3', 'tide_4']]:
-            if 'Low' in tide:
+            if isinstance(tide, str) and 'Low' in tide:
                 low_tide_list.append(tide[4:])
     #print(low_tide_list) 
     return low_tide_list
