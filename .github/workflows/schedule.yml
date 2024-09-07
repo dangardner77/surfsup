@@ -50,6 +50,7 @@ jobs:
         name: github-pages
         path: processed_weather_data.json
 
+
   # Deployment job
   deploy:
     environment:
@@ -59,6 +60,7 @@ jobs:
     needs: build
     permissions:
       id-token: write
+      pages: write
       contents: read  
     steps:
       - name: Deploy to GitHub Pages
