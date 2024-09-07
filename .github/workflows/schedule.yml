@@ -5,6 +5,9 @@ on:
     - cron: '0 2 * * *'  # This runs at 02:00 UTC every day
   workflow_dispatch:
 
+permissions:
+  contents: write
+  deployments: write
 
 jobs:
   build:
