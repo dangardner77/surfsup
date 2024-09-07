@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				sessionEmoji = '';
 				if (rowState === 'session') {
 					row.classList.add('session-row');
-					sessionEmoji = '🤟';
+					sessionEmoji = ' 🤟';
 				} else if (rowState === 'night') {
 					row.classList.add('night-row');
 				}
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				const cell3 = row.insertCell(2);
 				const cell4 = row.insertCell(3);
 
-				cell1.textContent = sessionEmoji + getDaylightEmoji(entry.daylight) + ' ' + formatDateString(entry.datetime) + ' ' + getTideEmoji(entry.lowtide);
+				cell1.textContent = formatDateString(entry.datetime) + getDaylightEmoji(entry.daylight) + getTideEmoji(entry.lowtide) +  sessionEmoji;
 				cell2.textContent = convertDegreesToCompass(entry.wind_direction);
 				cell3.textContent = convertKnotsToBeaufort(entry.wind_speed);
 				cell4.textContent = entry.wind_speed + ' [' + entry.wind_gusts + ']';
@@ -94,9 +94,9 @@ function formatDateString(dateString) {
 
 function getDaylightEmoji(daylight) {
 	if (daylight == 'day') {
-		daylightEmoji = '🌞';
+		daylightEmoji = ' 🌞';
 	} else {
-		daylightEmoji = '🌑';
+		daylightEmoji = ' 🌑';
 	}
 	
 	return daylightEmoji;
@@ -124,7 +124,7 @@ function onshore(direction) {
 
 function getTideEmoji(tide) {
 	if (tide == 'low') {
-		emoji = '🌅';
+		emoji = ' 🌅';
 	} else {
 		emoji = '';
 	}
