@@ -6,18 +6,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const weatherTable = document.getElementById('weather-table-body');			
 			
 			data.forEach(entry => {
+				
+				// boring, session, night
+				rowState = getRowState(entry.daylight,entry.lowtide,entry.wind_direction,entry.wind_speed);
 						
 				const row = weatherTable.insertRow();
+
+				sessionEmoji = '';
+				if (rowState === 'session') {
+					row.classList.add('session-row');
+					sessionEmoji = '🤟';
+				} else if (rowState === 'night') {
+					row.classList.add('night-row');
+				}
 
 				const cell1 = row.insertCell(0);
 				const cell2 = row.insertCell(1);
 				const cell3 = row.insertCell(2);
 				const cell4 = row.insertCell(3);
 
-				cell1.textContent = formatDateString(entry.datetime) + ' ' + getDaylightEmoji(entry.daylight) + ' ' + getTideEmoji(entry.lowtide);
-				cell2.textContent = convertDegreesToCompass(entry.wind_direction) + ' (' + entry.wind_direction + '°)';
+				cell1.textContent = sessionEmoji + getDaylightEmoji(entry.daylight) + ' ' + formatDateString(entry.datetime) + ' ' + getTideEmoji(entry.lowtide);
+				cell2.textContent = convertDegreesToCompass(entry.wind_direction);
 				cell3.textContent = convertKnotsToBeaufort(entry.wind_speed);
-				cell4.textContent = entry.wind_speed + ' gusting ' + entry.wind_gusts;
+				cell4.textContent = entry.wind_speed + ' [' + entry.wind_gusts + ']';
+
 			});
 			
         })
@@ -80,16 +92,34 @@ function formatDateString(dateString) {
     return date.toLocaleString('en-GB', options);
 }
 
-
-
-function getDaylightEmoji(daynight) {
-	if (daynight == 'day') {
-		daynightEmoji = '🌞';
+function getDaylightEmoji(daylight) {
+	if (daylight == 'day') {
+		daylightEmoji = '🌞';
 	} else {
-		daynightEmoji = '🌑';
+		daylightEmoji = '🌑';
 	}
 	
-	return daynightEmoji;
+	return daylightEmoji;
+}
+
+// returns state from: boring, session, night
+function getRowState(daylight,tide,direction,speed) {
+	if (daylight == 'night') {
+		return 'night';
+	} else if (tide == 'low' && onshore(direction) && speed > 10)  {
+		return 'session';
+	} else {
+		return 'boring';
+	}
+}
+
+// returns true if the wind direction is onshore
+function onshore(direction) {
+	if (direction > 90 && direction < 280) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 function getTideEmoji(tide) {
