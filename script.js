@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				const cell3 = row.insertCell(2);
 				const cell4 = row.insertCell(3);
 
-				cell1.textContent = formatDateString(entry.datetime) + getDaylightEmoji(entry.daylight) + getTideEmoji(entry.lowtide) +  sessionEmoji;
+				cell1.textContent = formatDateString(entry.datetime) + getTideEmoji(entry.lowtide) +  sessionEmoji;
 				cell2.textContent = convertDegreesToCompass(entry.wind_direction);
 				cell3.textContent = convertKnotsToBeaufort(entry.wind_speed);
 				cell4.textContent = entry.wind_speed + ' [' + entry.wind_gusts + ']';
