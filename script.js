@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			data.forEach(entry => {
 				
 				// boring, session, night
-				rowState = getRowState(entry.daylight,entry.lowtide,entry.wind_direction,entry.wind_speed);
+				rowState = getRowState(entry.daylight,entry.lowtide,entry.wind_direction,entry.wind_speed,entry.wind_gusts);
 						
 				const row = weatherTable.insertRow();
 
@@ -103,10 +103,11 @@ function getDaylightEmoji(daylight) {
 }
 
 // returns state from: boring, session, night
-function getRowState(daylight,tide,direction,speed) {
+function getRowState(daylight,tide,direction,speed,gusts) {
+	average_wind = (speed + gusts) / 2
 	if (daylight == 'night') {
 		return 'night';
-	} else if (tide == 'low' && onshore(direction) && speed > 10)  {
+	} else if (tide == 'low' && onshore(direction) && average_wind > 10)  {
 		return 'session';
 	} else {
 		return 'boring';
