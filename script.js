@@ -107,10 +107,13 @@ function getDaylightEmoji(daylight) {
 
 // returns state from: boring, session, night
 function getRowState(daylight,tide,direction,speed,gusts) {
-	average_wind = (speed + gusts) / 2
+	// Calculate the average wind speed
+	const averageWind = (speed + gusts) / 2
+
+	// Determine the table row presentation class based on conditions
 	if (daylight == 'night') {
 		return 'night';
-	} else if (tide == 'low' && onshore(direction) && average_wind > 10)  {
+	} else if (tide == 'low' && onshore(direction) && averageWind > 10)  {
 		return 'session';
 	} else {
 		return 'boring';
