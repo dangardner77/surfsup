@@ -30,6 +30,10 @@ https://easytide.admiralty.co.uk/?PortID=0066
 
 https://environment.data.gov.uk/flood-monitoring/doc/tidegauge
 
+
+### Wave height and period
+https://open-meteo.com/en/docs/marine-weather-api#hourly=wave_height,wave_direction,wave_period
+
 https://environment.data.gov.uk/flood-monitoring/tidegauge/index.html#filter=7&station=E71839
 
 https://admiraltyapi.developer.azure-api.net/api-details#api=uk-tidal-api&operation=Stations_GetStation
