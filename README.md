@@ -34,6 +34,8 @@ https://environment.data.gov.uk/flood-monitoring/tidegauge/index.html#filter=7&s
 
 https://admiraltyapi.developer.azure-api.net/api-details#api=uk-tidal-api&operation=Stations_GetStation
 
-
 ### Wave height and period
 https://open-meteo.com/en/docs/marine-weather-api#hourly=wave_height,wave_direction,wave_period
+
+### Pollution alerts
+https://environment.data.gov.uk/doc/bathing-water-quality/stp-risk-prediction/bathing-water/ukj3307-16400.json?_sort=-publishedAt&_pageSize=1
