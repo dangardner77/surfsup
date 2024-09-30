@@ -37,5 +37,8 @@ https://admiraltyapi.developer.azure-api.net/api-details#api=uk-tidal-api&operat
 ### Wave height and period
 https://open-meteo.com/en/docs/marine-weather-api#hourly=wave_height,wave_direction,wave_period
 
+https://marine-api.open-meteo.com/v1/marine?latitude=50.7838&longitude=-0.9687&hourly=wave_height,wave_period
+
+
 ### Pollution alerts
 https://environment.data.gov.uk/doc/bathing-water-quality/stp-risk-prediction/bathing-water/ukj3307-16400.json?_sort=-publishedAt&_pageSize=1
