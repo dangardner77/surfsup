@@ -43,17 +43,23 @@ jobs:
         uses: actions/upload-pages-artifact@v3
 
   # Deployment job
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
+#  deploy:
+#    environment:
+#      name: github-pages
+#      url: ${{ steps.deployment.outputs.page_url }}
+#    runs-on: ubuntu-latest
+#    needs: build
 #    steps:
 #      - name: Deploy to GitHub Pages
 #        id: deployment
 #        uses: actions/deploy-pages@v4
 
+  deploy:    
+    environment:      
+      name: github-pages      
+      url: ${{ steps.deployment_main.outputs.page_url }}    
+    runs-on: ubuntu-latest    
+    needs: build    
     steps:      
       - name: Checkout        
         uses: actions/checkout@v4
@@ -63,14 +69,14 @@ jobs:
       
       - name: Deploy to GitHub Pages for main branch
         if: github.ref == 'refs/heads/main'
-        id: deployment        
+        id: deployment_main  # Updated ID for main branch
         uses: actions/deploy-pages@v4
         with:
           folder: ./_site
 
       - name: Deploy to GitHub Pages for dev branch
         if: github.ref == 'refs/heads/wave-info'
-        id: deployment        
+        id: deployment_dev  # Updated ID for dev branch
         uses: actions/deploy-pages@v4
         with:
-          folder: ./_site/dev  
+          folder: ./_site/dev  # Adjust folder path for dev branch
