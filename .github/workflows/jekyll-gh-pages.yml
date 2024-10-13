@@ -41,46 +41,15 @@ jobs:
           destination: ./_site
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./_site        
 
   # Deployment job
-#  deploy:
-#    environment:
-#      name: github-pages
-#      url: ${{ steps.deployment.outputs.page_url }}
-#    runs-on: ubuntu-latest
-#    needs: build
-#    steps:
-#      - name: Deploy to GitHub Pages
-#        id: deployment
-#        uses: actions/deploy-pages@v4
-
-  deploy:    
-    environment:      
-      name: github-pages      
-      url: ${{ steps.deployment_main.outputs.page_url }}    
-    runs-on: ubuntu-latest    
-    needs: build    
-    steps:      
-      - name: Checkout        
-        uses: actions/checkout@v4
-      
-      - name: Deploy to GitHub Pages for main branch
-        if: github.ref == 'refs/heads/main'
-        id: deployment_main  # Updated ID for main branch
-        run: |
-          cp -r _site/* .
-          git add .
-          git commit -m 'Deploy main site'
-          git push origin gh-pages
-
-      - name: Deploy to GitHub Pages for dev branch
-        if: github.ref == 'refs/heads/wave-info'
-        id: deployment_dev  # Updated ID for dev branch
-        run: |
-          mkdir -p dev
-          cp -r _site/* dev/
-          git add dev/
-          git commit -m 'Deploy to /dev/ subfolder'
-          git push origin gh-pages
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
