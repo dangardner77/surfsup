@@ -67,13 +67,18 @@ jobs:
       - name: Deploy to GitHub Pages for main branch
         if: github.ref == 'refs/heads/main'
         id: deployment_main  # Updated ID for main branch
-        uses: actions/deploy-pages@v4
-        with:
-          folder: ./_site
+        run: |
+          cp -r _site/* .
+          git add .
+          git commit -m 'Deploy main site'
+          git push origin gh-pages
 
       - name: Deploy to GitHub Pages for dev branch
         if: github.ref == 'refs/heads/wave-info'
         id: deployment_dev  # Updated ID for dev branch
-        uses: actions/deploy-pages@v4
-        with:
-          folder: ./_site/dev  # Adjust folder path for dev branch
+        run: |
+          mkdir -p dev
+          cp -r _site/* dev/
+          git add dev/
+          git commit -m 'Deploy to /dev/ subfolder'
+          git push origin gh-pages
