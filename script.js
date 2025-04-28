@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				sessionEmoji = '';
 				if (rowState === 'session') {
 					row.classList.add('session-row');
-					sessionEmoji = ' 🤟';
+					sessionEmoji = ' 🤙';
 				} else if (rowState === 'night') {
 					row.classList.add('night-row');
 				}
