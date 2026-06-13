@@ -2,12 +2,11 @@ name: Run Python Script Daily
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # This runs at 02:00 UTC every day
+    - cron: '15 4 * * *'  # Runs at 4:15 AM UTC (5:15 AM BST) to beat the top-of-the-hour queue spikes
   workflow_dispatch:
 
 permissions:
   contents: write
-  deployments: write
 
 jobs:
   build:
@@ -15,21 +14,17 @@ jobs:
 
     steps:
     - name: Checkout repository content
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4  # Upgraded to v4 for faster execution
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5  # Upgraded to v5 for better caching and speed
       with:
         python-version: '3.10'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        pip install requests
-        #pip install json
-        pip install pandas
-        pip install datetime
+        pip install requests pandas
 
     - name: Run Python script
       run: python weather.py
@@ -39,13 +34,5 @@ jobs:
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add processed_weather_data.json
-        git commit -m 'Update JSON data'
+        git commit -m 'Update daily forecast data'
         git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: github-pages
-        path: processed_weather_data.json
