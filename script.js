@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cellTime.textContent = formatDateString(entry.datetime) + tideIndicator;
             cellWindDir.textContent = convertDegreesToCompass(entry.wind_direction);
             cellWindSpeed.textContent = formatWindString(entry.wind_speed, entry.wind_gusts);
-            cellWaves.textContent = formatWaveString(entry.wave_period, entry.wave_height);
+            cellWaves.textContent = formatWaveString(entry.swell_period, entry.wave_height);
 
 			const isOnshore = (entry.wind_direction > 90 && entry.wind_direction < 280);
 			if (isOnshore) {
