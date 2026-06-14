@@ -18,10 +18,9 @@ wind_data = fetch_data(wind_url)
 wind_hours = len(wind_data['hourly']['time'])
 
 # Fetch wave data from open-meteo.com
-wave_url = "https://marine-api.open-meteo.com/v1/marine?latitude=50.78&longitude=-0.99&hourly=wave_height,wave_direction,wave_period"
+wave_url = "https://marine-api.open-meteo.com/v1/marine?latitude=50.78&longitude=-0.99&hourly=wave_height,wave_period,swell_wave_height,swell_wave_period"
 wave_data = fetch_data(wave_url)
 wave_hours = len(wind_data['hourly']['time'])
-
 
 if wind_hours == wave_hours:
     hours = wind_hours
@@ -126,8 +125,10 @@ for hour_index in range(hours):
     output_row['wind_speed'] = wind_data['hourly']['wind_speed_10m'][hour_index]
     output_row['wind_gusts'] = wind_data['hourly']['wind_gusts_10m'][hour_index]
     #include wave data
-    output_row['wave_height'] = wave_data['hourly']['wave_height'][hour_index]    
-    output_row['wave_period'] = wave_data['hourly']['wave_period'][hour_index]        
+    output_row['wave_height'] = wave_data['hourly']['wave_height'][hour_index]        # Local Total Height
+    output_row['wave_period'] = wave_data['hourly']['wave_period'][hour_index]        # Local Chop Period
+    output_row['swell_height'] = wave_data['hourly']['swell_wave_height'][hour_index]  # Groundswell Height
+    output_row['swell_period'] = wave_data['hourly']['swell_wave_period'][hour_index]  # Groundswell Period
         
     output_data.append(output_row)
 #print(output_data) #DEBUG
