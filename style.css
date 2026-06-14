@@ -18,7 +18,7 @@ thead th {
 th, td {
     border-bottom: 1px solid #ddd;
     border-right: 1px solid #ddd;
-    padding: 12px 8px; /* Padding for mobile viewing */
+    padding: 8px 6px; /* Padding for mobile viewing */
     text-align: left;
     letter-spacing: -0.02em;  /* Micro-adjusts the spacing between letters to keep it crisp but compact */
 }
