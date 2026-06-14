@@ -31,18 +31,38 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 
             if (entry.daylight !== 'night') {
-				
+
 				// Scale everything to a max of 50 knots for headroom
-				const maxWindScale = 50;
-				const basePercent = Math.min((entry.wind_speed / maxWindScale) * 100, 100);
-				const gustPercent = Math.min((entry.wind_gusts / maxWindScale) * 100, 100);
-				cellWindSpeed.classList.add('bar-chart-cell');
-				cellWindSpeed.style.setProperty('--bar-color-base', '#fff176');
-				cellWindSpeed.style.setProperty('--bar-color-gust', '#fff9c4');
-				cellWindSpeed.style.setProperty('--base-width', `${basePercent}%`);
-				cellWindSpeed.style.setProperty('--gust-width', `${gustPercent}%`);
+			    const maxWindScale = 50;
+			    const basePercent = Math.min((entry.wind_speed / maxWindScale) * 100, 100);
+			    const gustPercent = Math.min((entry.wind_gusts / maxWindScale) * 100, 100);
+			    
+			    cellWindSpeed.classList.add('bar-chart-cell');
+			    
+			    // Set up our intensity tiers
+			    let baseColor, gustColor;
+			    
+			    if (entry.wind_speed > 18) {
+			        // 🔴 ANGRY NATURE! (Deep Amber / Orange-Yellow)
+			        baseColor = '#ffb300'; 
+			        gustColor = '#ffe082';
+			    } else if (entry.wind_speed > 12) {
+			        // 🟡 POWER! (Vivid Crisp Yellow)
+			        baseColor = '#f4e869'; 
+			        gustColor = '#fff9a6';
+			    } else {
+			        // ⚪ Light Wind (Muted Pastel Soft Yellow)
+			        baseColor = '#fef9db'; 
+			        gustColor = '#fffdf0';
+			    }
+			    
+			    // Inject the selected intensity tier into the CSS variables
+			    cellWindSpeed.style.setProperty('--bar-color-base', baseColor);
+			    cellWindSpeed.style.setProperty('--bar-color-gust', gustColor);
+			    cellWindSpeed.style.setProperty('--base-width', `${basePercent}%`);
+			    cellWindSpeed.style.setProperty('--gust-width', `${gustPercent}%`);
 				
-				// Max caps for scaling
+				// Max wave caps for scaling
 				const maxWaveHeight = 2.0; // metres
 				const maxWavePeriod = 15.0; // seconds
 
@@ -130,15 +150,8 @@ function convertKnotsToBeaufort(knots) {
 }
 */
 
-function formatWindString(speed,gusts) {
-	let windEmoji = '';
-	if (speed > 18) {
-		windEmoji = ' 💨💨';
-	} else if (speed > 12) {
-		windEmoji = ' 💨';
-	}		
-	const windString = speed + ' (' + gusts + ')' + windEmoji;
-	return windString;
+function formatWindString(speed, gusts) {
+    return `${speed} (${gusts})`;
 }
 
 function formatWaveString(period, height) {
