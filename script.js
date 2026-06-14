@@ -61,18 +61,15 @@ document.addEventListener('DOMContentLoaded', () => {
 			    cellWindSpeed.style.setProperty('--bar-color-gust', gustColor);
 			    cellWindSpeed.style.setProperty('--base-width', `${basePercent}%`);
 			    cellWindSpeed.style.setProperty('--gust-width', `${gustPercent}%`);
+
 				
 				// Max wave caps for scaling
 				const maxWaveHeight = 2.0; // metres
 				const maxWavePeriod = 15.0; // seconds
 
-				// 1. Base width = Wave Height percentage
 				const waveHeightPercent = Math.min((entry.wave_height / maxWaveHeight) * 100, 100);
-
-				// 2. Gust width = Height percentage + Period percentage
-				// (We add them together because the gradient needs a cumulative end point)
-				const wavePeriodPercent = (entry.wave_period / maxWavePeriod) * 100;
-				const waveCombinedPercent = Math.min(waveHeightPercent + wavePeriodPercent, 100);
+				const swellPeriodPercent = Math.min((entry.swell_period / maxWavePeriod) * 100, 100);
+				const waveCombinedPercent = Math.min(waveHeightPercent + swellPeriodPercent, 100);
 
 				// For Waves
 				cellWaves.classList.add('bar-chart-cell');
