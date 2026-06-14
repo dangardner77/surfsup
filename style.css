@@ -1,7 +1,6 @@
 body {
-    /* Arial Narrow and Trebuchet are crisp, taller, and narrower than standard Arial */
-    font-family: "Arial Narrow", "Trebuchet MS", sans-serif;
-    margin: 12px; /* Slightly reduced margins to give the table more horizontal breathing room */
+    font-family: Arial, sans-serif;
+    margin: 18px;
 }
 table {
     width: 100%;
@@ -19,9 +18,8 @@ thead th {
 th, td {
     border-bottom: 1px solid #ddd;
     border-right: 1px solid #ddd;
-    padding: 12px 6px; /* Reduced horizontal padding from 8px to 6px to stop early wrapping */
+    padding: 12px 8px; /* Padding for mobile viewing */
     text-align: left;
-    white-space: nowrap;      /* Tells the browser: "Do not break these strings into two lines!" */
     letter-spacing: -0.02em;  /* Micro-adjusts the spacing between letters to keep it crisp but compact */
 }
 th {
