@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const row = weatherTable.insertRow();
 
             if (entry.daylight === 'night') row.classList.add('night-row');
-            if (entry.lowtide === 'low') row.classList.add('tide-low-row');
 
             const cellTime = row.insertCell(0);
             const cellWindDir = row.insertCell(1);
