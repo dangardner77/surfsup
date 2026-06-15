@@ -9,35 +9,8 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="surfsup_icon_192.png">
     <title>🏄‍♂️ Surf's Up!</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-	.wind-row {
-		background-color: #fffacd;
-	}
-	.wave-row {
-		background-color: #d6eaf8;
-	}
-	.night-row {
-		color: silver;
-		filter: grayscale(100%);
-	}
-    </style>
+	<link rel="stylesheet" href="style.css">
+	<script src="local_weather_data.js"></script>
 </head>
 <body>
 
@@ -47,13 +20,14 @@
                 <th>Time</th>
                 <th>🧭</th>
                 <th>💨 knots</th>
-		<th>🌊</th>
+				<th>🌊</th>
             </tr>
         </thead>
         <tbody id="weather-table-body">
             <!-- Rows will be inserted here by JavaScript -->
         </tbody>
     </table>
+
     <script src="script.js"></script>
     <script>
         // Register the service worker for PWA functionality
