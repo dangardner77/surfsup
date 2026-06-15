@@ -2,7 +2,7 @@ name: Run Python Script Daily
 
 on:
   schedule:
-    - cron: '15 4 * * *'  # Runs at 4:15 AM UTC (5:15 AM BST) to beat the top-of-the-hour queue spikes
+    - cron: '27 1 * * *' 
   workflow_dispatch:
 
 permissions:
