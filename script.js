@@ -11,74 +11,69 @@ document.addEventListener('DOMContentLoaded', () => {
             if (entry.daylight === 'night') row.classList.add('night-row');
 
             const cellTime = row.insertCell(0);
-            const cellWindDir = row.insertCell(1);
-            const cellWindSpeed = row.insertCell(2);
-            const cellWaves = row.insertCell(3);
+            const cellWind = row.insertCell(1);
+            const cellWave = row.insertCell(2);
 
             const tideIndicator = entry.lowtide === 'low' ? ' 🏝️' : '';
 
             cellTime.textContent = formatDateString(entry.datetime) + tideIndicator;
-            cellWindDir.textContent = convertDegreesToCompass(entry.wind_direction);
-            cellWindSpeed.textContent = formatWindString(entry.wind_speed, entry.wind_gusts);
-            cellWaves.textContent = formatWaveString(entry.swell_period, entry.wave_height);
+            cellWind.textContent = formatWindString(entry.wind_direction, entry.wind_speed, entry.wind_gusts);
+            cellWave.textContent = formatWaveString(entry.swell_period, entry.wave_height);
 
-			const isOnshore = (entry.wind_direction > 90 && entry.wind_direction < 280);
-			if (isOnshore) {
-				cellWindDir.classList.add('wind-onshore');
-			} else {
-				cellWindDir.classList.add('wind-offshore');
-			}
-
-            if (entry.daylight !== 'night') {
-
-				// Scale everything to a max of 50 knots for headroom
-			    const maxWindScale = 50;
-			    const basePercent = Math.min((entry.wind_speed / maxWindScale) * 100, 100);
-			    const gustPercent = Math.min((entry.wind_gusts / maxWindScale) * 100, 100);
-			    
-			    cellWindSpeed.classList.add('bar-chart-cell');
-			    
-			    // Set up our intensity tiers
-			    let baseColor, gustColor;
-			    
-			    if (entry.wind_speed > 18) {
-			        // 🔴 ANGRY NATURE! (Deep Amber / Orange-Yellow)
-			        baseColor = '#ffb300'; 
-			        gustColor = '#ffe082';
-			    } else if (entry.wind_speed > 12) {
-			        // 🟡 POWER! (Vivid Crisp Yellow)
-			        baseColor = '#f4e869'; 
-			        gustColor = '#fff9a6';
-			    } else {
-			        // ⚪ Light Wind (Muted Pastel Soft Yellow)
-			        baseColor = '#fef9db'; 
-			        gustColor = '#fffdf0';
-			    }
-			    
-			    // Inject the selected intensity tier into the CSS variables
-			    cellWindSpeed.style.setProperty('--bar-color-base', baseColor);
-			    cellWindSpeed.style.setProperty('--bar-color-gust', gustColor);
-			    cellWindSpeed.style.setProperty('--base-width', `${basePercent}%`);
-			    cellWindSpeed.style.setProperty('--gust-width', `${gustPercent}%`);
-
-				
-				// Max wave caps for scaling
-				const maxWaveHeight = 2.0; // metres
-				const maxWavePeriod = 15.0; // seconds
-
-				const waveHeightPercent = Math.min((entry.wave_height / maxWaveHeight) * 100, 100);
-				const swellPeriodPercent = Math.min((entry.swell_period / maxWavePeriod) * 100, 100);
-				const waveCombinedPercent = Math.min(waveHeightPercent + swellPeriodPercent, 100);
-
-				// For Waves
-				cellWaves.classList.add('bar-chart-cell');
-				cellWaves.style.setProperty('--bar-color-base', '#aed5f4');
-				cellWaves.style.setProperty('--bar-color-gust', '#d6eaf8');
-				cellWaves.style.setProperty('--base-width', `${waveHeightPercent}%`);
-				cellWaves.style.setProperty('--gust-width', `${waveCombinedPercent}%`);
-			}
+			// Scale everything to a max of 50 knots for headroom
+			const maxWindScale = 50;
+			const bar1Percent = Math.min((entry.wind_speed / maxWindScale) * 100, 100);
+			const bar2Percent = Math.min((entry.wind_gusts / maxWindScale) * 100, 100);
 			
+			cellWind.classList.add('bar-chart-cell');
+			
+			// Calculate a fluid opacity between 0.15 (barely there) and 1.0 (maximum warning)
+			const minOpacity = 0.10;
+			const calculatedOpacity = minOpacity + ((entry.wind_gusts / maxWindScale) * (1 - minOpacity));
+			const safeOpacity = Math.min(Math.max(calculatedOpacity, minOpacity), 1.0).toFixed(2);
 
+			// Inject a single color with dynamic alpha transparency
+			cellWind.style.setProperty('--bar1-color', `rgba(235, 190, 0, ${safeOpacity})`);
+			// Do the same for gusts with a slightly lighter/more transparent version
+			cellWind.style.setProperty('--bar2-color', `rgba(255, 242, 140, ${safeOpacity})`);
+			
+			// Inject the gradient sizes
+			cellWind.style.setProperty('--bar1-width', `${bar1Percent}%`);
+			cellWind.style.setProperty('--bar2-width', `${bar2Percent}%`);
+
+			
+			// Scale wave height to a max of 3.0 meters for headroom
+			const maxWaveHeight = 3.0; // metres
+			
+			// Dynamically derive a realistic peak period ceiling (e.g., 3.0m height * 2.5 = 7.5s period)
+			const maxWavePeriod = maxWaveHeight * 2.5;
+			// Dynamically calculate the wave power headroom from derived values
+			const maxWavePowerScale = 0.5 * Math.pow(maxWaveHeight, 2) * maxWavePeriod;
+
+			const waveHeightPercent = Math.min((entry.wave_height / maxWaveHeight) * 100, 100);
+			const swellPeriodPercent = Math.min((entry.swell_period / maxWavePeriod) * 100, 100);
+			const waveCombinedPercent = Math.min(waveHeightPercent + swellPeriodPercent, 100);
+
+			//Calculate the approximate wave power (kW/m)
+			const waveHeight = entry.wave_height;
+			const wavePeriod = entry.wave_period;
+			const wavePower = 0.5 * Math.pow(waveHeight, 2) * wavePeriod;
+
+			// For Waves
+			cellWave.classList.add('bar-chart-cell');
+
+			// Calculate fluid opacity based on wave height
+			const minWaveOpacity = 0.20;
+			const calculatedWaveOpacity = minWaveOpacity + ((wavePower / maxWavePowerScale) * (1 - minWaveOpacity));
+			const safeWaveOpacity = Math.min(Math.max(calculatedWaveOpacity, minWaveOpacity), 1.0).toFixed(2);
+
+			// Inject the colors with the dynamic opacity
+			cellWave.style.setProperty('--bar1-color', `rgba(30, 144, 255, ${safeWaveOpacity})`);
+			cellWave.style.setProperty('--bar2-color', `rgba(145, 195, 235, ${safeWaveOpacity})`);
+			
+			cellWave.style.setProperty('--bar1-width', `${waveHeightPercent}%`);
+			cellWave.style.setProperty('--bar2-width', `${waveCombinedPercent}%`);
+			
 			
 			const session = isSession(entry.daylight, entry.lowtide, entry.wind_direction, entry.wind_speed, entry.wind_gusts, entry.wave_period, entry.wave_height);
 			if (session) {
@@ -129,6 +124,7 @@ function convertDegreesToCompass(degrees) {
 }
 
 /*
+//Unused but potentially useful
 function convertKnotsToBeaufort(knots) {
     if (knots < 1) return '0'; // Calm
     if (knots <= 3) return '1'; // Light air
@@ -146,8 +142,16 @@ function convertKnotsToBeaufort(knots) {
 }
 */
 
-function formatWindString(speed, gusts) {
-    return `${speed} (${gusts})`;
+function formatWindString(direction, speed, gusts) {
+	let windEmoji = '';
+	if (speed > 18) {
+		windEmoji = ' 💨💨';
+	} else if (speed > 12) {
+		windEmoji = ' 💨';
+	}
+	
+	const directionString = convertDegreesToCompass(direction);
+    return `${directionString} | ${speed} (${gusts}) ${windEmoji}`;
 }
 
 function formatWaveString(period, height) {
@@ -167,9 +171,7 @@ function formatWaveString(period, height) {
 		waveEmoji = '';
 	}
 
-	const waveString = height + 'm (' + period + 's)' + waveEmoji;
-	
-	return waveString;
+	return `${height}m | ${period}s ${waveEmoji}`;
 }
 
 
@@ -197,7 +199,7 @@ function isSession(daylight, tide, direction, speed, gusts, period, height) {
 }
 
 /*
-// returns state from: night, wind, wave, boring
+// Original session logic - returns state from: night, wind, wave, boring
 function getRowState(daylight,tide,direction,speed,gusts,period,height) {
 	// Calculate the average wind speed
 	const averageWind = (speed + gusts) / 2
