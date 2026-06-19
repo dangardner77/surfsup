@@ -37,20 +37,13 @@ th {
     overflow: hidden;
     position: relative;
     background-image: linear-gradient(90deg, 
-        var(--bar-color-base) var(--base-width, 0%),
-        var(--bar-color-gust) var(--base-width, 0%),
-        var(--bar-color-gust) var(--gust-width, 0%),
-        transparent var(--gust-width, 0%)
+        var(--bar1-color) 0%, 
+        var(--bar1-color) var(--bar1-width, 0%),
+        var(--bar2-color) var(--bar1-width, 0%),
+        var(--bar2-color) var(--bar2-width, 0%),
+        transparent var(--bar2-width, 0%),
+        transparent 100%
     );
-}
-
-.wind-onshore {
-	color: #2e7d32; /* Soft forest green */
-}
-
-.wind-offshore {
-	color: #D96B62; /* Muted red */
-
 }
 
 .session-row {
