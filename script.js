@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			
 			// Scale wave height to a max of 3.0 meters for headroom
 			const maxWaveHeight = 3.0; // metres
-			const maxWavePeriod = 12.0; // seconds
+			const maxWavePeriod = 20.0; // seconds
 			// Dynamically calculate the wave power headroom from derived values
 			const maxWavePowerScale = 0.5 * Math.pow(maxWaveHeight, 2) * maxWavePeriod;
 
