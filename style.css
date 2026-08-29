@@ -52,7 +52,7 @@ th {
 }
 
 /* Targets only the first cell (the Time column) to draw the solid green edge */
-.session-row td:first-child {
+.windy-row td:first-child {
     border-left: 5px solid #2e7d32 !important;
 }
 

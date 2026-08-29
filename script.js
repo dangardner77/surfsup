@@ -72,7 +72,12 @@ document.addEventListener('DOMContentLoaded', () => {
 			cellWave.style.setProperty('--bar1-width', `${waveHeightPercent}%`);
 			cellWave.style.setProperty('--bar2-width', `${waveCombinedPercent}%`);
 			
-			
+			// Check for daytime onshore wind to apply green bar to time cell
+			if (isWindy(entry.daylight, entry.wind_direction, entry.wind_speed, entry.wind_gusts)) {
+				row.classList.add('windy-row');
+			}
+
+			// Check for full low-tide session to apply green row background
 			const session = isSession(entry.daylight, entry.lowtide, entry.wind_direction, entry.wind_speed, entry.wind_gusts, entry.wave_period, entry.wave_height);
 			if (session) {
 				row.classList.add('session-row');
@@ -183,14 +188,31 @@ function formatDateString(dateString) {
     return date.toLocaleString('en-GB', options);
 }
 
+// returns true if the wind direction is onshore
+function isOnshore(direction) {
+	if (direction > 90 && direction < 280) {
+		return true;
+	} else {
+		return false;
+	}
+}
 
-// Identify a session
-function isSession(daylight, tide, direction, speed, gusts, period, height) {
-    if (daylight === 'night') return false;
-    
+// returns true if the wind speed and direction are good
+function isWindy(daylight, direction, speed, gusts) {
+	if (daylight === 'night') return false;
+
     const averageWind = (speed + gusts) / 2;
     // My proven Hayling Island formula
-    if (tide === 'low' && onshore(direction) && (averageWind > 10)) {
+    if (isOnshore(direction) && (averageWind > 10)) {
+        return true;
+    }
+    return false;
+}
+
+// Identify a low tide session
+function isSession(daylight, tide, direction, speed, gusts, period, height) {
+    // My proven Hayling Island formula
+    if (tide === 'low' && isWindy(daylight, direction, speed, gusts)) {
         return true;
     }
     return false;
@@ -215,11 +237,4 @@ function getRowState(daylight,tide,direction,speed,gusts,period,height) {
 }
 */
 
-// returns true if the wind direction is onshore
-function onshore(direction) {
-	if (direction > 90 && direction < 280) {
-		return true;
-	} else {
-		return false;
-	}
-}
+
