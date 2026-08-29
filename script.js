@@ -1,7 +1,17 @@
+// Preferred wind range for a session (accessible by helper functions)
+const MIN_WIND_AVERAGE = 10; // knots
+const MAX_WIND_GUST = 30; // knots
+
 document.addEventListener('DOMContentLoaded', () => {
     const version = new Date().getTime();
     const weatherTable = document.getElementById('weather-table-body');			
     weatherTable.innerHTML = ''; 
+
+	// Upper limits for display of wind/wave data
+	const UPPER_WIND_SPEED = 50; // knots
+	const UPPER_WAVE_HEIGHT = 3.0; // metres
+	const UPPER_WAVE_PERIOD = 20.0; // seconds
+	const UPPER_WAVE_POWER = 0.5 * Math.pow(UPPER_WAVE_HEIGHT, 2) * UPPER_WAVE_PERIOD;
 
     // Core logic to process and render the weather rows
     function renderWeatherData(data) {
@@ -20,16 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
             cellWind.textContent = formatWindString(entry.wind_direction, entry.wind_speed, entry.wind_gusts);
             cellWave.textContent = formatWaveString(entry.swell_period, entry.wave_height);
 
-			// Scale everything to a max of 50 knots for headroom
-			const maxWindScale = 50;
-			const bar1Percent = Math.min((entry.wind_speed / maxWindScale) * 100, 100);
-			const bar2Percent = Math.min((entry.wind_gusts / maxWindScale) * 100, 100);
+			const bar1Percent = Math.min((entry.wind_speed / UPPER_WIND_SPEED) * 100, 100);
+			const bar2Percent = Math.min((entry.wind_gusts / UPPER_WIND_SPEED) * 100, 100);
 			
 			cellWind.classList.add('bar-chart-cell');
 			
 			// Calculate a fluid opacity between 0.15 (barely there) and 1.0 (maximum warning)
 			const minOpacity = 0.10;
-			const calculatedOpacity = minOpacity + ((entry.wind_gusts / maxWindScale) * (1 - minOpacity));
+			const calculatedOpacity = minOpacity + ((entry.wind_gusts / UPPER_WIND_SPEED) * (1 - minOpacity));
 			const safeOpacity = Math.min(Math.max(calculatedOpacity, minOpacity), 1.0).toFixed(2);
 
 			// Inject a single color with dynamic alpha transparency
@@ -41,15 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			cellWind.style.setProperty('--bar1-width', `${bar1Percent}%`);
 			cellWind.style.setProperty('--bar2-width', `${bar2Percent}%`);
 
-			
-			// Scale wave height to a max of 3.0 meters for headroom
-			const maxWaveHeight = 3.0; // metres
-			const maxWavePeriod = 20.0; // seconds
-			// Dynamically calculate the wave power headroom from derived values
-			const maxWavePowerScale = 0.5 * Math.pow(maxWaveHeight, 2) * maxWavePeriod;
-
-			const waveHeightPercent = Math.min((entry.wave_height / maxWaveHeight) * 100, 100);
-			const swellPeriodPercent = Math.min((entry.swell_period / maxWavePeriod) * 100, 100);
+			const waveHeightPercent = Math.min((entry.wave_height / UPPER_WAVE_HEIGHT) * 100, 100);
+			const swellPeriodPercent = Math.min((entry.swell_period / UPPER_WAVE_PERIOD) * 100, 100);
 			const waveCombinedPercent = Math.min(waveHeightPercent + swellPeriodPercent, 100);
 
 			//Calculate the approximate wave power (kW/m)
@@ -62,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			// Calculate fluid opacity based on wave height
 			const minWaveOpacity = 0.20;
-			const calculatedWaveOpacity = minWaveOpacity + ((wavePower / maxWavePowerScale) * (1 - minWaveOpacity));
+			const calculatedWaveOpacity = minWaveOpacity + ((wavePower / UPPER_WAVE_POWER) * (1 - minWaveOpacity));
 			const safeWaveOpacity = Math.min(Math.max(calculatedWaveOpacity, minWaveOpacity), 1.0).toFixed(2);
 
 			// Inject the colors with the dynamic opacity
@@ -73,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			cellWave.style.setProperty('--bar2-width', `${waveCombinedPercent}%`);
 			
 			// Check for daytime onshore wind to apply green bar to time cell
-			if (isWindy(entry.daylight, entry.wind_direction, entry.wind_speed, entry.wind_gusts)) {
+			if (isGoodWind(entry.daylight, entry.wind_direction, entry.wind_speed, entry.wind_gusts)) {
 				row.classList.add('windy-row');
 			}
 
@@ -198,21 +199,19 @@ function isOnshore(direction) {
 }
 
 // returns true if the wind speed and direction are good
-function isWindy(daylight, direction, speed, gusts) {
+function isGoodWind(daylight, direction, speed, gusts) {
 	if (daylight === 'night') return false;
 
     const averageWind = (speed + gusts) / 2;
-    // My proven Hayling Island formula
-    if (isOnshore(direction) && (averageWind > 10)) {
-        return true;
-    }
-    return false;
+	const isGoodWindSpeed = averageWind >= MIN_WIND_AVERAGE && gusts <= MAX_WIND_GUST;
+
+    return isOnshore(direction) && isGoodWindSpeed;
 }
 
 // Identify a low tide session
 function isSession(daylight, tide, direction, speed, gusts, period, height) {
     // My proven Hayling Island formula
-    if (tide === 'low' && isWindy(daylight, direction, speed, gusts)) {
+    if (tide === 'low' && isGoodWind(daylight, direction, speed, gusts)) {
         return true;
     }
     return false;
