@@ -127,9 +127,8 @@ function convertDegreesToCompass(degrees) {
 
 function formatWindString(direction, speed, gusts) {
 	const directionString = convertDegreesToCompass(direction);
-    return `${directionString} | ${speed} (${gusts})`;
+	return `${directionString} | ${speed} ➔ ${gusts}`;
 }
-
 
 function formatWaveString(period, height) {
     let waveEmoji = '';
