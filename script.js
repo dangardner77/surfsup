@@ -16,14 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Core logic to process and render the weather rows
     function renderWeatherData(data) {
         data.forEach(entry => {
-			// STEP 1: DOM Setup & Row Base Classes
+			// Set up rows and cells
             const row = weatherTable.insertRow();
             if (entry.daylight === 'night') row.classList.add('night-row');
-
 			const cellTime = row.insertCell(0);
 		    const cellWind = row.insertCell(1);
 		    const cellWave = row.insertCell(2);
-		
+
+			// Set up text content placeholders
 		    const tideIndicator = entry.lowtide === 'low' ? ' 🏝️' : '';
 		    let timeText = formatDateString(entry.datetime) + tideIndicator;
 		    let windText = formatWindString(entry.wind_direction, entry.wind_speed, entry.wind_gusts);
@@ -32,10 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		    // Check for ideal wind range and append gear recommendations
 		    if (isGoodWind(entry.daylight, entry.wind_direction, entry.wind_speed, entry.wind_gusts)) {
 		        row.classList.add('windy-row');
-		
+				// Get gear recommendations from external helper functions
 		        const wing = getWingRecommendation(entry.wind_speed, entry.wind_gusts);
-		        const foil = getFoilRecommendation(entry.wind_speed, entry.wind_gusts, entry.wave_height, entry.swell_period);
-		
+		        const foil = getFoilRecommendation(entry.wind_speed, entry.wind_gusts, entry.wave_height, entry.swell_period);		
 				windText += ' | ' + wing;
 				waveText += ' | ' + foil;
 		    }
@@ -180,19 +179,25 @@ function isSession(daylight, tide, direction, speed, gusts, period, height) {
 }
 
 function getWingRecommendation(speed, gusts) {
+	const WING_S = '3.5m';
+    const WING_M = '4.5m';
+    const WING_L = '5.5m';
     const averageWind = (speed + gusts) / 2;
-    if (averageWind < 14) return '[Wing:L]';
-    if (averageWind > 19) return '[Wing:S]';
-    return '[Wing:M]';
+    if (averageWind < 14) return '[Wing:' + WING_L + ']';
+    if (averageWind > 19) return '[Wing:' + WING_S + ']';
+    return '[Wing:' + WING_M + ']';
 }
 
 function getFoilRecommendation(speed, gusts, waveHeight, swellPeriod) {
+	const FOIL_S = '850';
+    const FOIL_M = '990';
+    const FOIL_L = '1150';
     const averageWind = (speed + gusts) / 2;
     const waveEnergy = waveHeight * swellPeriod;
     
-    if (averageWind < 14 && waveEnergy < 4.0) return '[Foil:L]';
-    if (averageWind > 18 || waveEnergy > 7.0) return '[Foil:S]';
-    return '[Foil:M]';
+    if (averageWind < 14 && waveEnergy < 4.0) return '[Foil:' + FOIL_L + ']';
+    if (averageWind > 18 || waveEnergy > 7.0) return '[Foil:' + FOIL_S + ']';
+    return '[Foil:' + FOIL_M + ']';
 }
 
 /*
