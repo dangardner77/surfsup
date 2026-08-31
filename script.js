@@ -134,9 +134,9 @@ function formatWaveString(period, height) {
     let waveEmoji = '';
     // Single wave emoji reserved only for notable/usable swell
     if ((period > 10 && height > 0.3) || (period > 3.5 && height > 0.7)) {
-        waveEmoji = '🌊';
+        waveEmoji = ' 🌊';
     }
-    return `${height}m | ${period}s ${waveEmoji}`;
+    return `${height}m | ${period}s${waveEmoji}`;
 }
 
 function formatDateString(dateString) {
