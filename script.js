@@ -180,11 +180,14 @@ function isSession(daylight, tide, direction, speed, gusts, period, height) {
 function getWingRecommendation(speed, gusts) {
 	const WING_S = '3.5m';
     const WING_M = '4.5m';
+	const WING_ML = '5m';
     const WING_L = '5.5m';
     const averageWind = (speed + gusts) / 2;
-    if (averageWind < 14) return '[Wing:' + WING_L + ']';
-    if (averageWind > 19) return '[Wing:' + WING_S + ']';
-    return '[Wing:' + WING_M + ']';
+
+	if (averageWind < 12) return '[Wing:' + WING_L + ']';   // Under 12 kts -> 5.5m
+    if (averageWind < 15) return '[Wing:' + WING_ML + ']'; // 14 to 15 kts -> 5.0m
+    if (averageWind < 20) return '[Wing:' + WING_M + ']';   // 16.5 to 20 kts -> 4.5m
+    return '[Wing:' + WING_S + ']';                         // 20+ kts -> 3.5m
 }
 
 function getFoilRecommendation(speed, gusts, waveHeight, swellPeriod) {
