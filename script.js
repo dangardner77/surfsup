@@ -1,6 +1,6 @@
 // Preferred wind range for a session (accessible by helper functions)
-const MIN_WIND_AVERAGE = 10; // knots
-const MAX_WIND_GUST = 30; // knots
+const MIN_DESIRABLE_WIND = 10; // knots
+const MAX_DESIRABLE_GUST = 28; // knots
 
 document.addEventListener('DOMContentLoaded', () => {
     const version = new Date().getTime();
@@ -16,73 +16,71 @@ document.addEventListener('DOMContentLoaded', () => {
     // Core logic to process and render the weather rows
     function renderWeatherData(data) {
         data.forEach(entry => {
+			// Set up rows and cells
             const row = weatherTable.insertRow();
-
             if (entry.daylight === 'night') row.classList.add('night-row');
+			const cellTime = row.insertCell(0);
+		    const cellWind = row.insertCell(1);
+		    const cellWave = row.insertCell(2);
 
-            const cellTime = row.insertCell(0);
-            const cellWind = row.insertCell(1);
-            const cellWave = row.insertCell(2);
+			// Set up text content placeholders
+		    const tideIndicator = entry.lowtide === 'low' ? ' 🏝️' : '';
+		    let timeText = formatDateString(entry.datetime) + tideIndicator;
+		    let windText = formatWindString(entry.wind_direction, entry.wind_speed, entry.wind_gusts);
+		    let waveText = formatWaveString(entry.swell_period, entry.wave_height);
+		
+		    // Check for ideal wind range and append gear recommendations
+		    if (isGoodWind(entry.daylight, entry.wind_direction, entry.wind_speed, entry.wind_gusts)) {
+		        row.classList.add('windy-row');
+				// Get gear recommendations from external helper functions
+		        const wing = getWingRecommendation(entry.wind_speed, entry.wind_gusts);
+		        const foil = getFoilRecommendation(entry.wind_speed, entry.wind_gusts, entry.wave_height, entry.swell_period);		
+				windText += ' | ' + wing;
+				waveText += ' | ' + foil;
+		    }
 
-            const tideIndicator = entry.lowtide === 'low' ? ' 🏝️' : '';
+			// Check for low-tide sandbar session to apply green row background
+			if (isSession(entry.daylight, entry.lowtide, entry.wind_direction, entry.wind_speed, entry.wind_gusts, entry.wave_period, entry.wave_height)) {
+				row.classList.add('session-row');
+			}
 
-            cellTime.textContent = formatDateString(entry.datetime) + tideIndicator;
-            cellWind.textContent = formatWindString(entry.wind_direction, entry.wind_speed, entry.wind_gusts);
-            cellWave.textContent = formatWaveString(entry.swell_period, entry.wave_height);
+			// Populate the text content
+			cellTime.textContent = timeText;
+		    cellWind.textContent = windText;
+		    cellWave.textContent = waveText;
 
-			const bar1Percent = Math.min((entry.wind_speed / UPPER_WIND_SPEED) * 100, 100);
-			const bar2Percent = Math.min((entry.wind_gusts / UPPER_WIND_SPEED) * 100, 100);
-			
+			// Format the WIND cell bar chart
 			cellWind.classList.add('bar-chart-cell');
-			
-			// Calculate a fluid opacity between 0.15 (barely there) and 1.0 (maximum warning)
+			const windSpeedPercent = Math.min((entry.wind_speed / UPPER_WIND_SPEED) * 100, 100);
+			const windGustsPercent = Math.min((entry.wind_gusts / UPPER_WIND_SPEED) * 100, 100);		
 			const minOpacity = 0.10;
 			const calculatedOpacity = minOpacity + ((entry.wind_gusts / UPPER_WIND_SPEED) * (1 - minOpacity));
 			const safeOpacity = Math.min(Math.max(calculatedOpacity, minOpacity), 1.0).toFixed(2);
-
-			// Inject a single color with dynamic alpha transparency
+			// Inject the colors with the dynamic opacity
 			cellWind.style.setProperty('--bar1-color', `rgba(235, 190, 0, ${safeOpacity})`);
-			// Do the same for gusts with a slightly lighter/more transparent version
 			cellWind.style.setProperty('--bar2-color', `rgba(255, 242, 140, ${safeOpacity})`);
-			
-			// Inject the gradient sizes
-			cellWind.style.setProperty('--bar1-width', `${bar1Percent}%`);
-			cellWind.style.setProperty('--bar2-width', `${bar2Percent}%`);
+			cellWind.style.setProperty('--bar1-width', `${windSpeedPercent}%`);
+			cellWind.style.setProperty('--bar2-width', `${windGustsPercent}%`);
 
+			// Format the WAVE cell bar chart			
+			cellWave.classList.add('bar-chart-cell');
 			const waveHeightPercent = Math.min((entry.wave_height / UPPER_WAVE_HEIGHT) * 100, 100);
 			const swellPeriodPercent = Math.min((entry.swell_period / UPPER_WAVE_PERIOD) * 100, 100);
 			const waveCombinedPercent = Math.min(waveHeightPercent + swellPeriodPercent, 100);
-
 			//Calculate the approximate wave power (kW/m)
 			const waveHeight = entry.wave_height;
 			const wavePeriod = entry.wave_period;
 			const wavePower = 0.5 * Math.pow(waveHeight, 2) * wavePeriod;
-
-			// For Waves
-			cellWave.classList.add('bar-chart-cell');
-
 			// Calculate fluid opacity based on wave height
 			const minWaveOpacity = 0.20;
 			const calculatedWaveOpacity = minWaveOpacity + ((wavePower / UPPER_WAVE_POWER) * (1 - minWaveOpacity));
 			const safeWaveOpacity = Math.min(Math.max(calculatedWaveOpacity, minWaveOpacity), 1.0).toFixed(2);
-
 			// Inject the colors with the dynamic opacity
 			cellWave.style.setProperty('--bar1-color', `rgba(30, 144, 255, ${safeWaveOpacity})`);
 			cellWave.style.setProperty('--bar2-color', `rgba(145, 195, 235, ${safeWaveOpacity})`);
-			
 			cellWave.style.setProperty('--bar1-width', `${waveHeightPercent}%`);
 			cellWave.style.setProperty('--bar2-width', `${waveCombinedPercent}%`);
 			
-			// Check for daytime onshore wind to apply green bar to time cell
-			if (isGoodWind(entry.daylight, entry.wind_direction, entry.wind_speed, entry.wind_gusts)) {
-				row.classList.add('windy-row');
-			}
-
-			// Check for full low-tide session to apply green row background
-			const session = isSession(entry.daylight, entry.lowtide, entry.wind_direction, entry.wind_speed, entry.wind_gusts, entry.wave_period, entry.wave_height);
-			if (session) {
-				row.classList.add('session-row');
-			}
         });
     }
 
@@ -127,57 +125,19 @@ function convertDegreesToCompass(degrees) {
     return `${directions[index].emoji} ${directions[index].dir}`;
 }
 
-/*
-//Unused but potentially useful
-function convertKnotsToBeaufort(knots) {
-    if (knots < 1) return '0'; // Calm
-    if (knots <= 3) return '1'; // Light air
-    if (knots <= 6) return '2'; // Light breeze
-    if (knots <= 10) return '3'; // Gentle breeze
-    if (knots <= 16) return '4'; // Moderate breeze
-    if (knots <= 21) return '5'; // Fresh breeze
-    if (knots <= 27) return '6'; // Strong breeze
-    if (knots <= 33) return '7'; // Near gale
-    if (knots <= 40) return '8'; // Gale
-    if (knots <= 47) return '9'; // Strong gale
-    if (knots <= 55) return '10'; // Storm
-    if (knots <= 63) return '11'; // Violent storm
-    return '12'; // Hurricane
-}
-*/
-
 function formatWindString(direction, speed, gusts) {
-	let windEmoji = '';
-	if (speed > 18) {
-		windEmoji = ' 💨💨';
-	} else if (speed > 12) {
-		windEmoji = ' 💨';
-	}
-	
 	const directionString = convertDegreesToCompass(direction);
-    return `${directionString} | ${speed} (${gusts}) ${windEmoji}`;
+	return `${directionString} | ${speed} ➔ ${gusts}`;
 }
 
 function formatWaveString(period, height) {
-	let waveEmoji = ''; // Declare variable with let
-
-	if (period > 12 && height > 0.5) {
-		// Ideal: Long period, medium+ height groundswell
-		waveEmoji = ' 🌊🌊';
-	} else if (period > 10 && height > 0.3) {
-		// Good: Long period, smaller height groundswell
-		waveEmoji = ' 🌊';
-	} else if (period > 3.5 && height > 0.7) {
-		// Tighter, more selective rule for short period wind swell
-		waveEmoji = ' 🌊';
-	} else {
-		// No significant wave for foiling
-		waveEmoji = '';
-	}
-
-	return `${height}m | ${period}s ${waveEmoji}`;
+    let waveEmoji = '';
+    // Single wave emoji reserved only for notable/usable swell
+    if ((period > 10 && height > 0.3) || (period > 3.5 && height > 0.7)) {
+        waveEmoji = ' 🌊';
+    }
+    return `${height}m | ${period}s${waveEmoji}`;
 }
-
 
 function formatDateString(dateString) {
     const date = new Date(dateString);
@@ -203,7 +163,7 @@ function isGoodWind(daylight, direction, speed, gusts) {
 	if (daylight === 'night') return false;
 
     const averageWind = (speed + gusts) / 2;
-	const isGoodWindSpeed = averageWind >= MIN_WIND_AVERAGE && gusts <= MAX_WIND_GUST;
+	const isGoodWindSpeed = averageWind >= MIN_DESIRABLE_WIND && gusts <= MAX_DESIRABLE_GUST;
 
     return isOnshore(direction) && isGoodWindSpeed;
 }
@@ -215,6 +175,31 @@ function isSession(daylight, tide, direction, speed, gusts, period, height) {
         return true;
     }
     return false;
+}
+
+function getWingRecommendation(speed, gusts) {
+	const WING_S = '3.5m';
+    const WING_M = '4.5m';
+	const WING_ML = '5m';
+    const WING_L = '5.5m';
+    const averageWind = (speed + gusts) / 2;
+
+	if (averageWind < 12) return '[Wing:' + WING_L + ']';   // Under 12 kts -> 5.5m
+    if (averageWind < 15) return '[Wing:' + WING_ML + ']'; // 14 to 15 kts -> 5.0m
+    if (averageWind < 20) return '[Wing:' + WING_M + ']';   // 16.5 to 20 kts -> 4.5m
+    return '[Wing:' + WING_S + ']';                         // 20+ kts -> 3.5m
+}
+
+function getFoilRecommendation(speed, gusts, waveHeight, swellPeriod) {
+	const FOIL_S = '850';
+    const FOIL_M = '990';
+    const FOIL_L = '1150';
+    const averageWind = (speed + gusts) / 2;
+    const waveEnergy = waveHeight * swellPeriod;
+    
+    if (averageWind < 14 && waveEnergy < 4.0) return '[Foil:' + FOIL_L + ']';
+    if (averageWind > 18 || waveEnergy > 7.0) return '[Foil:' + FOIL_S + ']';
+    return '[Foil:' + FOIL_M + ']';
 }
 
 /*
@@ -233,6 +218,25 @@ function getRowState(daylight,tide,direction,speed,gusts,period,height) {
 	} else {
 		return 'boring';
 	}
+}
+*/
+
+/*
+//Unused but potentially useful
+function convertKnotsToBeaufort(knots) {
+    if (knots < 1) return '0'; // Calm
+    if (knots <= 3) return '1'; // Light air
+    if (knots <= 6) return '2'; // Light breeze
+    if (knots <= 10) return '3'; // Gentle breeze
+    if (knots <= 16) return '4'; // Moderate breeze
+    if (knots <= 21) return '5'; // Fresh breeze
+    if (knots <= 27) return '6'; // Strong breeze
+    if (knots <= 33) return '7'; // Near gale
+    if (knots <= 40) return '8'; // Gale
+    if (knots <= 47) return '9'; // Strong gale
+    if (knots <= 55) return '10'; // Storm
+    if (knots <= 63) return '11'; // Violent storm
+    return '12'; // Hurricane
 }
 */
 
