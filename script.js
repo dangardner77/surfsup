@@ -35,8 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
 				// Get gear recommendations from external helper functions
 		        const wing = getWingRecommendation(entry.wind_speed, entry.wind_gusts);
 		        const foil = getFoilRecommendation(entry.wind_speed, entry.wind_gusts, entry.wave_height, entry.swell_period);		
-				windText += ' | ' + wing;
-				waveText += ' | ' + foil;
+				windText += ' ' + wing;
+				waveText += ' ' + foil;
 		    }
 
 			// Check for low-tide sandbar session to apply green row background
@@ -178,27 +178,33 @@ function isSession(daylight, tide, direction, speed, gusts, period, height) {
 }
 
 function getWingRecommendation(speed, gusts) {
-	const WING_S = '3.5m';
-    const WING_M = '4.5m';
-	const WING_ML = '5m';
-    const WING_L = '5.5m';
-    const averageWind = (speed + gusts) / 2;
+	const WING_XS = '3.0';
+    const WING_S = '3.5';
+    const WING_M = '4.5';
+	const WING_ML = '5.0';
+    const WING_L = '5.5';
 
-	if (averageWind < 12) return '[Wing:' + WING_L + ']';   // Under 12 kts -> 5.5m
-    if (averageWind < 15) return '[Wing:' + WING_ML + ']'; // 14 to 15 kts -> 5.0m
-    if (averageWind < 20) return '[Wing:' + WING_M + ']';   // 16.5 to 20 kts -> 4.5m
-    return '[Wing:' + WING_S + ']';                         // 20+ kts -> 3.5m
+    // Weighted toward peak gusts to account for non-linear wind pressure (v²)
+    const effectiveWind = (speed * 0.35) + (gusts * 0.65);
+
+    if (effectiveWind < 12.5) return '[Wing:' + WING_L + ']';
+    if (effectiveWind < 15.5) return '[Wing:' + WING_ML + ']';
+    if (effectiveWind < 19.5) return '[Wing:' + WING_M + ']';
+    if (effectiveWind < 22.5) return '[Wing:' + WING_S + ']';
+    return '[Wing:' + WING_XS + ']';
 }
 
 function getFoilRecommendation(speed, gusts, waveHeight, swellPeriod) {
 	const FOIL_S = '850';
     const FOIL_M = '990';
     const FOIL_L = '1150';
-    const averageWind = (speed + gusts) / 2;
-    const waveEnergy = waveHeight * swellPeriod;
+
+    const effectiveWind = (speed * 0.35) + (gusts * 0.65);
+    // Wave Energy Index proportional to true physical wave power (H² * T)
+    const waveEnergy = Math.pow(waveHeight, 2) * swellPeriod;
     
-    if (averageWind < 14 && waveEnergy < 4.0) return '[Foil:' + FOIL_L + ']';
-    if (averageWind > 18 || waveEnergy > 7.0) return '[Foil:' + FOIL_S + ']';
+    if (effectiveWind < 14 && waveEnergy < 3.5) return '[Foil:' + FOIL_L + ']';
+    if (effectiveWind > 18 || waveEnergy > 7.5) return '[Foil:' + FOIL_S + ']';
     return '[Foil:' + FOIL_M + ']';
 }
 
